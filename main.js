@@ -55,50 +55,63 @@ async function main(response) {
   // open browser
   const browser = await puppeteer.launch({ headless, args: [`--window-size=${width},${height}`] });
 
-  // open page
-  const page = await browser.newPage();
-  await page.setViewport({ width: parseInt(width), height: parseInt(height) });
-  await page.goto(EXTRACT_URL);
+  const locations = ["0", "13", "16"];
 
-  // Click on "Have your fingerprints and photograph taken"
-  await page.click("#fingeravtryck_foto + label");
+  for (const location of locations) {
+    // open page
+    const page = await browser.newPage();
+    await page.setViewport({ width: parseInt(width), height: parseInt(height) });
+    await page.goto(EXTRACT_URL);
 
-  // Answer "Stockholm (Sundbyberg)" when asking "Where do you want to make an appointment?"
-  await page.select("#enhet", "0");
+    // Click on "Have your fingerprints and photograph taken"
+    await page.click("#fingeravtryck_foto + label");
 
-  // Select 3 visitors
-  await page.select("#sokande", "2");
+    // Answer 0 = "Stockholm (Sundbyberg)" when asking "Where do you want to make an appointment?"
+    // 13 Uppsala
+    // 16 Västerås
+    await page.select("#enhet", location);
 
-  // Click on "Accept terms"
-  await page.click("#godkannId1 + label");
+    // Select 3 visitors
+    await page.select("#sokande", "2");
 
-  // Click on "Continue button"
-  await page.waitForTimeout(300);
-  await page.waitForSelector("input#bokaSubmit:not([disabled])");
-  await page.waitForTimeout(300);
-  await page.click("#bokaSubmit");
-  await page.screenshot({ path: screenshots.shift() });
+    // Click on "Accept terms"
+    await page.click("#godkannId1 + label");
 
-  // Enter contac details
-  await page.waitForSelector("#fnamn");
-  await page.type("#fnamn", firstname);
-  await page.type("#enamn", lastname);
-  await page.type("#telefon", phone);
-  await page.type("#epost", email);
-  await page.type("#epost2", email);
-  await page.screenshot({ path: screenshots.shift() });
+    // Click on "Continue button"
+    await page.waitForTimeout(300);
+    await page.waitForSelector("input#bokaSubmit:not([disabled])");
+    await page.waitForTimeout(300);
+    await page.click("#bokaSubmit");
+    // await page.screenshot({ path: screenshots.shift() });
 
-  const error = await page.evaluate(() => {
-    return document.querySelector(".error");
-  });
-
-  if (error) {
-    // cleanup & steps screenshots
-    browser.close();
+    // Enter contac details
+    await page.waitForSelector("#fnamn");
+    await page.type("#fnamn", firstname);
+    await page.type("#enamn", lastname);
+    await page.type("#telefon", phone);
+    await page.type("#epost", email);
+    await page.type("#epost2", email);
     await page.screenshot({ path: screenshots.shift() });
-    await page.waitForTimeout(20000);
-  }
 
+    const serviceCenterElement = await page.$("#mv-main > div:nth-child(1) > b:nth-child(4)");
+    const serviceCenter = await page.evaluate((el) => el.textContent, serviceCenterElement);
+    console.log("serviceCenter:", serviceCenter);
+
+    const errorElement = await page.$(".error");
+    const errorText = await page.evaluate((el) => el?.textContent, errorElement);
+
+    console.log("errorText:", errorText);
+
+    if (errorText) {
+      // cleanup & steps screenshots
+      //   await page.screenshot({ path: screenshots.shift() });
+      await page.close();
+    } else {
+      await page.waitForTimeout(20000);
+    }
+  }
+  // cleanup & steps screenshots
+  browser.close();
   console.log(chalk.blue("\nSee screenshots: "), outputs);
 }
 
