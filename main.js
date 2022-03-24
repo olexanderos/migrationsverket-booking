@@ -55,7 +55,7 @@ async function main(response) {
   // open browser
   const browser = await puppeteer.launch({ headless, args: [`--window-size=${width},${height}`] });
 
-  const locations = ["0", "13", "16"];
+  const locations = ["10", "13", "16"];
 
   for (const location of locations) {
     // open page
