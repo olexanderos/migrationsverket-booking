@@ -77,6 +77,7 @@ async function main(response) {
     // await page.waitForTimeout(20000);
 
     // Click on "Accept terms"
+    await page.waitForSelector("#godkannId1 + label");
     await page.click("#godkannId1 + label");
 
     // Click on "Continue button"
@@ -96,7 +97,7 @@ async function main(response) {
 
     const serviceCenterElement = await page.$("#mv-main > div:nth-child(1) > b:nth-child(4)");
     const serviceCenter = await page.evaluate((el) => el.textContent, serviceCenterElement);
-    console.log("serviceCenter:", serviceCenter);
+    console.log("\nserviceCenter:", chalk.blue(serviceCenter));
 
     // Click on "Month" button
     await page.waitForSelector(".fc-month-button");
@@ -106,13 +107,10 @@ async function main(response) {
     const errorElement = await page.$(".error");
     const errorText = await page.evaluate((el) => el?.textContent, errorElement);
 
-    console.log("errorText:", errorText);
-
     await page.screenshot({ path: screenshots.shift() });
 
-    if (errorText) {
-      // cleanup & steps screenshots
-      //   await page.screenshot({ path: screenshots.shift() });
+    if (errorText && errorText?.trim().startsWith("At the moment, there are no available time slots")) {
+      console.log("errorText:\n\t", chalk.grey(errorText.trim()));
       await page.close();
     } else {
       await page.waitForTimeout(200000);
