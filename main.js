@@ -97,6 +97,11 @@ async function main(response) {
     const serviceCenter = await page.evaluate((el) => el.textContent, serviceCenterElement);
     console.log("serviceCenter:", serviceCenter);
 
+    // Click on "Month" button
+    await page.waitForSelector(".fc-month-button");
+    await page.click(".fc-month-button");
+    await page.click(".fc-month-button");
+
     const errorElement = await page.$(".error");
     const errorText = await page.evaluate((el) => el?.textContent, errorElement);
 
