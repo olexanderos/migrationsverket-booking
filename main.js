@@ -91,7 +91,6 @@ async function main(response) {
     await page.type("#telefon", phone);
     await page.type("#epost", email);
     await page.type("#epost2", email);
-    await page.screenshot({ path: screenshots.shift() });
 
     const serviceCenterElement = await page.$("#mv-main > div:nth-child(1) > b:nth-child(4)");
     const serviceCenter = await page.evaluate((el) => el.textContent, serviceCenterElement);
@@ -107,12 +106,14 @@ async function main(response) {
 
     console.log("errorText:", errorText);
 
+    await page.screenshot({ path: screenshots.shift() });
+
     if (errorText) {
       // cleanup & steps screenshots
       //   await page.screenshot({ path: screenshots.shift() });
       await page.close();
     } else {
-      await page.waitForTimeout(20000);
+      await page.waitForTimeout(200000);
     }
   }
   // cleanup & steps screenshots
