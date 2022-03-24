@@ -42,15 +42,18 @@ const response = async function () {
 };
 
 async function main(response) {
-  const { EXTRACT_URL, FIRSTNAME: firstname, LASTNAME: lastname, PHONE: phone, EMAIL: email, DEBUG } = process.env;
+  const { FIRSTNAME: firstname, LASTNAME: lastname, PHONE: phone, EMAIL: email } = process.env;
+  const { EXTRACT_URL, NUMBER_OF_PERSONS, SHOW_BROWSER } = process.env;
   const { WIDTH: width, HEIGHT: height } = process.env;
-  const headless = typeof DEBUG === "undefined" || DEBUG == false;
+  const headless = typeof SHOW_BROWSER === "undefined" || SHOW_BROWSER == false;
   const outputs = ["01-page.png", "02-page.png", "03-page.png"];
   const screenshots = [...outputs];
   //   console.log("EXTRACT_URL:", EXTRACT_URL);
   //   console.log("firstname:", firstname);
   //   console.log("response:", response);
   console.log("headless:", headless);
+
+  const numberOfPersons = (parseInt(NUMBER_OF_PERSONS) - 1).toString();
 
   // open browser
   const browser = await puppeteer.launch({ headless, args: [`--window-size=${width},${height}`] });
@@ -72,7 +75,7 @@ async function main(response) {
     await page.select("#enhet", location);
 
     // Select 3 visitors
-    await page.select("#sokande", "2");
+    await page.select("#sokande", numberOfPersons);
 
     // Click on "Accept terms"
     await page.click("#godkannId1 + label");
