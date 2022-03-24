@@ -48,16 +48,15 @@ async function main(response) {
   const headless = typeof SHOW_BROWSER === "undefined" || SHOW_BROWSER == false;
   const outputs = ["01-page.png", "02-page.png", "03-page.png"];
   const screenshots = [...outputs];
-  //   console.log("EXTRACT_URL:", EXTRACT_URL);
-  //   console.log("firstname:", firstname);
-  //   console.log("response:", response);
-  console.log("headless:", headless);
 
   const numberOfPersons = (parseInt(NUMBER_OF_PERSONS) - 1).toString();
 
   // open browser
   const browser = await puppeteer.launch({ headless, args: [`--window-size=${width},${height}`] });
 
+  // 10 = "Stockholm (Sundbyberg)"
+  // 13 = Uppsala
+  // 16 = Västerås
   const locations = ["10", "13", "16"];
 
   for (const location of locations) {
@@ -69,13 +68,13 @@ async function main(response) {
     // Click on "Have your fingerprints and photograph taken"
     await page.click("#fingeravtryck_foto + label");
 
-    // Answer 0 = "Stockholm (Sundbyberg)" when asking "Where do you want to make an appointment?"
-    // 13 Uppsala
-    // 16 Västerås
+    // Answer when asking "Where do you want to make an appointment?"
+
     await page.select("#enhet", location);
 
     // Select 3 visitors
     await page.select("#sokande", numberOfPersons);
+    // await page.waitForTimeout(20000);
 
     // Click on "Accept terms"
     await page.click("#godkannId1 + label");
