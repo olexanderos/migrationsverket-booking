@@ -5,7 +5,7 @@ Helps to book an appointment in Swedish Migration Agency (Migrationsverket) to h
 Searching for available time slots includes 3 locations:
 
 - Stockholm (Sundbuberg)
-- Upsala
+- Uppsala
 - Västerås
 
 ### Requirements
